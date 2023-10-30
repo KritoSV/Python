@@ -12,7 +12,6 @@
 # 4. Использование функций. 
 # Ваша программа не должна быть линейной
 
-
 # # 1. Создать файл для записи телефонной книги:        ++++++++++
 # - открытие_файла_на_дозапись.
 # - удаление записи из файла.
@@ -32,6 +31,10 @@
 # сохранить_их_в_программе.                             ++++++++++
 # - сделать_выборку_нужной_записи - сам_поиск.          ++++++++++
 # - показать_результат_поиска.                          ++++++++++
+
+
+import os
+
 
 def input_name():
     return input("Введите Имя контакта:\n")
@@ -60,10 +63,11 @@ def input_data():
     print(str_contact[:-2])
     with open("phonebook.txt", "r", encoding="UTF-8") as file:
         contacts_list = read_file().rstrip().split("\n\n")
-        for contact in contacts_list:
-            contact = contact.replace("\n", " ").split(' ')
-            if contact[3] == phone:
-                return print(f"{contact[3]} Такой контакт уже имеется!")
+        if os.stat('phonebook.txt').st_size != 0:
+            for contact in contacts_list:
+                contact = contact.replace("\n", " ").split(' ')
+                if contact[3] == phone:
+                    return print(f"{contact[3]} Такой контакт уже имеется!")
     with open("phonebook.txt", "a", encoding="UTF-8") as file:
         file.write(str_contact)
 
@@ -141,7 +145,7 @@ def change_contact():
         "2. Имя\n"
         "3. Отчество\n"
         "4. Телефон\n"
-        "5. Адрес"
+        "5. Адрес\n"
         "6. Удаление контакта")
     config_contact = input("Введите № варианта: ")
     while config_contact not in ("1", "2", "3", "4", "5", "6"):
@@ -151,12 +155,12 @@ def change_contact():
     new_contact = list.copy(find_contact.replace("\n", " ").split())
     if config_contact != "6":
         new_contact[int(config_contact) - 1] = input("Введите новое значение:\n")
-        new_contact = f"{new_contact[0]} {new_contact[1]} {new_contact[2]} {new_contact[3]}\n{new_contact[4]}\n\n"
-        with open("phonebook.txt", "a+", encoding="UTF-8") as file:
-            # read_file().replace(find_contact, new_contact)
-            file.write(read_file().replace(find_contact, new_contact))
-    else: pass
-                
+        new_contact = f"{new_contact[0]} {new_contact[1]} {new_contact[2]} {new_contact[3]}\n{new_contact[4]}"
+        new_file = read_file().replace(find_contact, new_contact)
+    else: 
+        new_file = read_file().replace(find_contact + '\n\n', '')
+    with open("phonebook.txt", "w", encoding="UTF-8") as file:
+        file.write(new_file)        
 
 
 def interface():
@@ -171,7 +175,7 @@ def interface():
             "4. Изменение данных\n"
             "5. Выход")
         command = input("Введите № варианта: ")
-        while command not in ("1", "2", "3", "4"):
+        while command not in ("1", "2", "3", "4", "5"):
             print("Не существующий вариант\n"
                 "Попробуйте снова.")
             command = input("Введите № варианта: ")
